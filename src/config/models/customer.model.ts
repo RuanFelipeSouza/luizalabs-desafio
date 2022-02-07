@@ -12,11 +12,10 @@ export const CustomerSchema = new Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    index: true,
+    sparse: true,
   },
   password: {
     type: String,
-    required: true,
     trim: true,
   },
   productList: [
@@ -24,7 +23,7 @@ export const CustomerSchema = new Schema({
       price: String,
       image: String,
       brand: String,
-      id: { type: String, index: { unique: true } },
+      id: String,
       title: String,
       reviewScore: String,
     },

@@ -19,9 +19,13 @@ export class CustomerService {
   }
 
   async findOne(id: string) {
-    return await this.customerModel.findOne({ email: id }).exec();
+    const user = await this.customerModel.find({ email: id });
+    return user[0];
   }
-
+  async findOneWishlist(id: string) {
+    const user = await this.customerModel.findOne({ email: id });
+    return user.productList;
+  }
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
     await this.customerModel.findOneAndUpdate({ email: id }, updateCustomerDto);
     return 'Customer Updated';

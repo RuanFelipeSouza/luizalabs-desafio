@@ -18,19 +18,20 @@ export class WishlistService {
   }
   async create(id: string, productId: string) {
     const product = await this.productService.findProduct(productId);
+    if (!product[0]) return `Product ${productId} not found`;
     const customer = await this.customerService.findOne(id);
     if (!customer) return `Customer ${id} not found`;
     const favoriteProduct = await this.customerModel.findOne({
       'productList.id': productId,
     });
     if (favoriteProduct) return `Product ${productId} already added`;
-    const customerList = await this.customerModel.findOneAndUpdate(
+    await this.customerModel.findOneAndUpdate(
       { email: id },
       {
         $push: { productList: product },
       },
     );
-    return customerList;
+    return `Product ${productId} added`;
   }
 
   async update(id: string, updateWishlistDto: UpdateWishlistDto) {
@@ -42,22 +43,13 @@ export class WishlistService {
 
   async remove(customerEmail, productId: string) {
     const customer = await this.customerModel.findOne({ email: customerEmail });
-    const newProductList = customer.productList.map((product) => {
-      console.log('product', product);
+    const newProductList = customer.productList.filter((product) => {
+      return product.id != productId;
     });
     await this.customerModel.findOneAndUpdate(
-      {
-        email: customerEmail,
-      },
-      { productlist: newProductList },
+      { email: customerEmail },
+      { productList: newProductList },
     );
     return 'Item Removed';
-  }
-  private async isValid(customer, productId) {
-    const isValid = customer.productList.map((product) => {
-      if (product.id === productId) return false;
-    });
-    console.log(isValid);
-    return isValid;
   }
 }
